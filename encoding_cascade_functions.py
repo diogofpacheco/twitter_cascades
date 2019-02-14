@@ -2,25 +2,32 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
-def extractFeatures(row):
+def extractFeatures(cascade_data):
+    """extract the features of a given cascade tree.
+
+    input
+    -----
+    An object with 'edges' and 'nodes' as keys. For instance, it can be
+    a row of a dataframe that has 'nodes' and 'edges' columns. The value for
+    the 'edges' should be a temporally ordered edge list, where the root of the
+    tree is the destination of the first edge.
+
+    """
     try:
         features = {}
-        edges_list = row['edges']
-        G = createNetwork(edges_list)
+        edges_list = cascade_data['edges']
+        G = nx.DiGraph(edges_list)
         if G:
-            root_id = edges_list[0][1] # assuming temporal ordered directed edge list
-            features.update(calculateNetworkMetrics(G, root_id, row['nodes']))
+            first_edge = edges_list[0]
+            root_id = first_edge[1]
+            features.update(
+                    calculateNetworkMetrics(G, root_id, cascade_data['nodes'])
+            )
         return pd.Series(features)
     except nx.NetworkXNoPath as e:
-        logging.error('Error extracting feature from row: '+str(row))
+        logging.error('Error extracting feature from: {}'.format(cascade_data))
         logging.error(e)
     
-def createNetwork(edges_list):
-    if edges_list:
-        G = nx.DiGraph()
-        G.add_edges_from(edges_list)
-        return G
-    return False
     
 def calculateNetworkMetrics(G, root, nodes):
     short_paths_from_root = [nx.shortest_path_length(G, s, root) for s in nodes]
