@@ -6,7 +6,7 @@ def extractFeatures(row):
     try:
         features = {}
         edges_list = row['edges']
-        G = createNetwork(edges_list)
+        G = nx.DiGraph(edges_list)
         if G:
             root_id = edges_list[0][1] # assuming temporal ordered directed edge list
             features.update(calculateNetworkMetrics(G, root_id, row['nodes']))
@@ -15,12 +15,6 @@ def extractFeatures(row):
         logging.error('Error extracting feature from row: '+str(row))
         logging.error(e)
     
-def createNetwork(edges_list):
-    if edges_list:
-        G = nx.DiGraph()
-        G.add_edges_from(edges_list)
-        return G
-    return False
     
 def calculateNetworkMetrics(G, root, nodes):
     short_paths_from_root = [nx.shortest_path_length(G, s, root) for s in nodes]
