@@ -5,7 +5,7 @@ The actual code in the `encoding_twitter_cascades` notebook:
  1. read tweets from a mongodb collection.
     1. extract quoted embedded tweets.
     2. extract retweeted embedded tweets.
- 2. for each tweet, define its actionType (tweet, retweet, retweet of quote, etc.) and set rootID, parentID, or provisoryParentID accordingly.
+ 2. for each tweet, define its actionType (tweet, retweet, retweet of quote, etc.) and set rootID, parentID, or provisoryParentID accordingly (see `encoding_cascade_functions.checkActionType`).
  3. find best parentID to replace provisoryParent
  4. find parentID for retweets and quotes
  5. find rootID for replies and those initially with provisoryParent
